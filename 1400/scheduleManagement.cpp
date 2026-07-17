@@ -1,62 +1,53 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-bool solve(vector<int> a, int threshold)
+bool isPossible(map<int, int> &countPerWorker, int max, int n)
 {
-    // cout << threshold << " ";
-    int n = a.size();
-    int i = 0, count = 0;
-    while (i < n && a[i] >= threshold)
+    long long availability = 0, jobs = 0;
+    for (int i = 1; i <= n; i++)
     {
-        count += a[i++] - threshold;
-    }
-    while (i < n) {
-        int temp = (threshold - a[i++]) / 2;
-        if (temp >= count)
+        if (countPerWorker[i] > max)
         {
-            // cout << "True\n";
-            return true;
+            jobs += countPerWorker[i] - max;
         }
-        count -= temp;
+        else
+        {
+            availability += (max - countPerWorker[i]) / 2;
+        }
     }
-    // cout << "False\n";
-    return !count;
+    // cout << max << " " << availability << " " << jobs << endl;
+    return availability >= jobs;
 }
 
 int main()
 {
+    // your code goes here
     int t;
     cin >> t;
     while (t--)
     {
         int n, m;
         cin >> n >> m;
-        vector<int> a(n, 0);
-        for (int i = 0, temp; i < m; i++)
+        map<int, int> countPerWorker;
+        for (int i = 0, tmp; i < m; i++)
         {
-            cin >> temp;
-            a[temp - 1]++;
+            cin >> tmp;
+            countPerWorker[tmp]++;
         }
-        sort(a.begin(), a.end(), greater<>());
-        // for (int i = 0; i < n; i++) {
-        //     cout << a[i] << " ";
-        // }
-        // cout << endl;
 
-        int start = 1, end = m / n + 1;
-        int mid, ans = end;
-        while (start <= end)
+        int ans = m + 1;
+        int min = 0, max = m;
+        while (min <= max)
         {
-            mid = (start + end) / 2;
-            if (solve(a, mid))
+            int mid = (min + max) / 2;
+            if (isPossible(countPerWorker, mid, n))
             {
                 ans = mid;
-                end = mid - 1;
+                max = mid - 1;
             }
             else
             {
-                start = mid + 1;
+                min = mid + 1;
             }
         }
         cout << ans << endl;
